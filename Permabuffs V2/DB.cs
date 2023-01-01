@@ -12,33 +12,11 @@ namespace Permabuffs_V2
 {
     public static class DB
 	{
-		private static IDbConnection db;
+		private static IDbConnection db => TShock.DB;
 		public static Dictionary<int, DBInfo> PlayerBuffs = new Dictionary<int, DBInfo>();
 
 		public static void Connect()
 		{
-			switch (TShock.Config.Settings.StorageType.ToLower())
-			{
-				case "mysql":
-					string[] dbHost = TShock.Config.Settings.MySqlHost.Split(':');
-					db = new MySqlConnection()
-					{
-						ConnectionString = string.Format("Server={0}; Port={1}; Database={2}; Uid={3}; Pwd={4};",
-							dbHost[0],
-							dbHost.Length == 1 ? "3306" : dbHost[1],
-							TShock.Config.Settings.MySqlDbName,
-							TShock.Config.Settings.MySqlUsername,
-							TShock.Config.Settings.MySqlPassword)
-
-					};
-					break;
-
-				case "sqlite":
-					string sql = Path.Combine(TShock.SavePath, "Permabuffs.sqlite");
-					db = new SqliteConnection(string.Format("uri=file://{0},Version=3", sql));
-					break;
-
-			}
 
 			SqlTableCreator sqlcreator = new SqlTableCreator(db, db.GetSqlType() == SqlType.Sqlite ? (IQueryBuilder)new SqliteQueryCreator() : new MysqlQueryCreator());
 
